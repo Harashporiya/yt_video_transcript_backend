@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  video Video[]
+}
+
+model Video{
+  id String @id @default(uuid())
+  userId String
+  user  User @relation(fields: [userId], references: [id],onDelete: Cascade)
+  videoId String 
+  videoUrl String
+  title String?
+  thumbnail String?
+  transcript  String?  @db.Text
+  namespace   String @unique
+  totalChunks Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([userId, videoId])
+  @@index([userId])
+  @@index([videoId])
+}
+
