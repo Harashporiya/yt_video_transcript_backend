@@ -1,9 +1,8 @@
 import { prisma } from '../lib/prisma.js';
-import {
-  processVideoService,
-  askQuestionService,
-  deleteVideoService,
-} from '../services/youtube.service.js'
+import { processVideoService } from '../services/video/processVideo.service.js';
+import { askQuestionService } from '../services/video/askQuestion.service.js';
+import { deleteVideoService } from '../services/video/deleteVideo.service.js';
+import { generateInterviewService } from '../services/video/generateInterview.service.js';
 
 export const processVideoController = async (req, res) => {
   // console.log(req.user)
@@ -89,6 +88,8 @@ export const videoDeleteController = async (req, res) => {
         },
       });
 
+      console.log(notExists)
+
       if (!notExists) {
         return res.status(404).json({
           success: false,
@@ -100,6 +101,35 @@ export const videoDeleteController = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Video deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const generateInterviewController = async (req, res) => {
+  const videoId = req.params.videoId;
+  const userId = req.user.userId;
+
+  try {
+    if (!videoId) {
+      return res.status(400).json({
+        success: false,
+        message: "Video ID is required",
+      });
+    }
+
+    const questions = await generateInterviewService(videoId, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Interview questions generated successfully",
+      questions,
     });
   } catch (error) {
     console.log(error);
