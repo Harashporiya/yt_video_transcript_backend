@@ -10,8 +10,10 @@ import {
     LinkIcon,
     ArrowRightIcon,
     SpinnerGapIcon,
-    LightbulbIcon
+    LightbulbIcon,
+    InfoIcon
 } from "@phosphor-icons/react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export function VideoProcessor() {
     const { data: session } = useSession()
@@ -19,6 +21,7 @@ export function VideoProcessor() {
 
     const [videoUrl, setVideoUrl] = useState("")
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const extractVideoId = (url: string) => {
         const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
@@ -27,10 +30,11 @@ export function VideoProcessor() {
     }
 
     const processVideo = async () => {
+        setError(null);
         if (!videoUrl) return;
         const vId = extractVideoId(videoUrl);
         if (!vId) {
-            alert("Invalid YouTube URL");
+            setError("Invalid YouTube URL");
             return;
         }
 
@@ -44,17 +48,27 @@ export function VideoProcessor() {
             });
             router.push(`?v=${vId}`);
             setVideoUrl("");
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Failed to process video");
+            setError(error?.response?.data?.message || "Failed to process video");
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <div className="flex flex-1 flex-col items-center px-4 w-full h-full overflow-y-auto bg-[#212121]">
-            <div className="flex flex-col items-center justify-center max-w-4xl w-full flex-1 pt-10 pb-6">
+        <div className="flex flex-1 flex-col items-center px-4 w-full h-full overflow-y-auto bg-[#212121] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-col items-center justify-center max-w-4xl w-full flex-1 pt-10 pb-6 relative">
+                
+                {error && (
+                    <div className="absolute top-0 w-full px-4 pt-4 z-50">
+                        <Alert variant="destructive" className="bg-red-500/10 border-red-500/20 text-red-500">
+                            <InfoIcon className="h-4 w-4" weight="bold" />
+                            <AlertTitle>Error</AlertTitle>
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    </div>
+                )}
 
                 {/* Header Section */}
                 <div className="mb-10 flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
