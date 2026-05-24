@@ -11,6 +11,7 @@ const allowedOrigins = [
   process.env.LOCAL_FRONTEND_URL,
   process.env.FRONTEND_DEPLOY_URL,
   "http://localhost:3000",
+  "https://yt-video-transcript-chi.vercel.app"
 ]
 
 const corsOptions = {
