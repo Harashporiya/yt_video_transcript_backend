@@ -9,7 +9,8 @@ const app = express();
 
 const allowedOrigins = [
   process.env.LOCAL_FRONTEND_URL,
-  process.env.FRONTEND_DEPLOY_URL
+  process.env.FRONTEND_DEPLOY_URL,
+  "http://localhost:3000",
 ]
 
 const corsOptions = {
