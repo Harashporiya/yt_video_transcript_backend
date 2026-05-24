@@ -6,9 +6,17 @@ import userRoutes from "./routes/user.routes.js"
 dotenv.config();
 
 const app = express();
-console.log(process.env.LOCAL_FRONTEND_URL, process.env.FRONTEND_DEPLOY_URL)
+
+const allowedOrigins = [
+  process.env.LOCAL_FRONTEND_URL,
+  process.env.FRONTEND_DEPLOY_URL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://yt-video-transcript-chi.vercel.app"
+].filter(Boolean).map(url => url.replace(/\/$/, ""));
+
 const corsOptions = {
-  origin: [process.env.LOCAL_FRONTEND_URL, process.env.FRONTEND_DEPLOY_URL],
+  origin: allowedOrigins,
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
