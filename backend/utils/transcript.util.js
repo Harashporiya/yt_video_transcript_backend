@@ -1,11 +1,16 @@
 import { ApifyClient } from "apify-client";
 import { YoutubeTranscript } from "youtube-transcript";
+import getVideoId from "youtube-video-id";
 
 const client = new ApifyClient({
   token: process.env.APIFY_API_TOKEN,
 });
 
 export const getTranscript = async (videoUrl) => {
+  // Extract video ID to ensure a strictly formatted URL for Apify
+  const videoId = getVideoId(videoUrl);
+  const standardUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
   // Step 1: Try English transcript
   try {
     console.log("Attempting to fetch English transcript locally...");
@@ -35,7 +40,7 @@ export const getTranscript = async (videoUrl) => {
     console.log("Using Apify API to fetch transcript...");
 
     const input = {
-      youtube_url: videoUrl,
+      youtube_url: standardUrl,
       language: "en",
       include_transcript_text: true,
     };
