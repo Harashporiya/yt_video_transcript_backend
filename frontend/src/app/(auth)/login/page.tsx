@@ -1,18 +1,19 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
+import { YoutubeLogoIcon } from "@phosphor-icons/react/dist/ssr"
 import { LoginForm } from "@/components/login-form"
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GalleryVerticalEnd className="size-4" />
+    <div className="flex min-h-svh flex-col items-center justify-center bg-[#212121]">
+      <div className="flex w-full max-w-[400px] flex-col items-center gap-8 px-8 sm:px-0">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="flex items-center justify-center rounded-lg p-2 bg-red-500/10">
+            <YoutubeLogoIcon size={40} className="text-red-500" weight="fill" />
           </div>
-          Acme Inc.
-        </a>
-        <LoginForm />
+          <h1 className="text-3xl font-bold text-white">Welcome back</h1>
+        </div>
+        <div className="w-full">
+          <LoginForm />
+        </div>
       </div>
     </div>
   )
