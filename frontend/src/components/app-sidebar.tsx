@@ -35,6 +35,8 @@ import {
 import { useSession, signOut } from "next-auth/react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { InfoIcon } from "@phosphor-icons/react"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
@@ -42,6 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [videos, setVideos] = useState<any[]>([])
   const [userProfile, setUserProfile] = useState<any>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const token = (session as any)?.backendToken || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
@@ -68,6 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const token = (session as any)?.backendToken || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
     if (!token) return;
 
+    setError(null);
     try {
         await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/youtube/delete/${videoId}`, {
             headers: { Authorization: token }
@@ -79,15 +83,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         if (currentUrl.searchParams.get("v") === videoId) {
             router.push('/dashboard');
         }
-    } catch (error) {
-        console.error("Failed to delete video:", error);
-        alert("Failed to delete video");
+    } catch (err: any) {
+        console.error("Failed to delete video:", err);
+        setError("Failed to delete video");
+        setTimeout(() => setError(null), 3000);
     }
   }
 
   return (
     <Sidebar className="border-r-0 !bg-[#171717] text-white w-[260px]" {...props}>
       <SidebarHeader className="p-3 pb-0 !bg-[#171717]">
+        {error && (
+            <Alert variant="destructive" className="mb-4 bg-red-500/10 border-red-500/20 text-red-500">
+                <InfoIcon className="h-4 w-4" weight="bold" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        )}
         <SidebarMenu>
           <SidebarMenuItem className="mb-4 mt-1 flex items-center justify-between w-full px-2">
             <div 
