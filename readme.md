@@ -13,6 +13,67 @@ A powerful, AI-driven full-stack web application designed to automatically extra
 - **Robust Authentication:** Secure, persistent authentication flow using NextAuth.js and Google OAuth.
 - **Video History Management:** Intuitive dashboard to track processed videos with inline management tools.
 
+## 🏗️ Architecture Pipeline
+
+Here is the complete data flow and architectural pipeline of the YouTube Video Transcripter:
+
+```mermaid
+flowchart TB
+    %% Definitions
+    User((User))
+    
+    subgraph Frontend["Frontend (Next.js)"]
+        UI["Landing Page & UI"]
+        Auth["NextAuth.js\n(Google OAuth)"]
+        Dash["Dashboard\n(Chat & Summary)"]
+    end
+    
+    subgraph Backend["Backend (Node.js/Express)"]
+        API["API Endpoints"]
+        Extractor["Transcript\nExtractor"]
+        LLM["LangChain &\nAI Services"]
+    end
+
+    subgraph External["External APIs"]
+        YT["YouTube\n(Native Subtitles)"]
+        Apify["Apify Actor\n(Fallback Scraper)"]
+        Gemini["Google GenAI\n(Gemini)"]
+    end
+
+    subgraph Databases["Databases"]
+        PG[("PostgreSQL via Prisma\n(Users, Videos, Chats)")]
+        Vector[("Pinecone\n(Vector DB)")]
+    end
+
+    %% User Interaction
+    User -->|Visits| UI
+    User -->|Authenticates| Auth
+    User -->|Submits Video URL| Dash
+    User -->|Chats with AI| Dash
+
+    %% Frontend to Backend
+    Auth <-->|Stores/Reads User| PG
+    Dash <-->|REST Requests| API
+
+    %% Backend Pipeline (Video Processing)
+    API -->|1. Process Video| Extractor
+    Extractor -->|1a. Fetch Subtitles| YT
+    Extractor -->|1b. Fallback Extract| Apify
+    Extractor -->|2. Clean Transcript| LLM
+    
+    %% AI Processing
+    LLM -->|3. Generate Summaries| Gemini
+    LLM -->|4. Chunk & Embed| Vector
+    LLM -->|5. Store Metadata| PG
+
+    %% Chat Pipeline (RAG)
+    API -->|Chat Message| LLM
+    LLM -->|Search Similar Chunks| Vector
+    Vector -->|Relevant Context| LLM
+    LLM -->|Prompt + Context| Gemini
+    Gemini -->|AI Response| API
+```
+
 ## 🛠️ Tech Stack
 
 ### Frontend
