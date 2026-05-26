@@ -109,7 +109,7 @@ export function LoginForm({
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
-              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#2f2f2f] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
+              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
             />
         </div>
         
@@ -122,7 +122,7 @@ export function LoginForm({
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
-              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#2f2f2f] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
+              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
             />
         </div>
         
@@ -145,7 +145,7 @@ export function LoginForm({
           <span className="w-full border-t border-white/10" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#212121] px-2 text-white/50">
+          <span className="bg-black px-2 text-white/50">
             OR
           </span>
         </div>
@@ -156,7 +156,7 @@ export function LoginForm({
             variant="outline" 
             type="button" 
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="h-12 w-full text-base font-medium rounded-lg border-white/20 bg-[#2f2f2f] hover:bg-[#3f3f3f] text-white transition-colors relative"
+            className="h-12 w-full text-base font-medium rounded-lg border-white/10 bg-[#0a0a0a] hover:bg-white/5 text-white transition-colors relative"
         >
           <svg className="absolute left-4 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
