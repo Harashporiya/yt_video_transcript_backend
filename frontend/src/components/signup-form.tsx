@@ -177,7 +177,7 @@ export function SignupForm({
             variant="outline" 
             type="button" 
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="h-12 w-full text-base font-medium rounded-lg border-white/10 bg-[#0a0a0a] hover:bg-white/5 text-white transition-colors relative"
+            className="h-12 w-full text-base font-medium rounded-lg border-white/10 bg-[#0a0a0a] hover:bg-white/5 text-white hover:text-white transition-colors relative"
         >
           <svg className="absolute left-4 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
