@@ -21,13 +21,13 @@ function DashboardContent() {
     const activeVideoId = searchParams.get("v")
 
     return (
-        <SidebarInset className="bg-[#212121] text-white flex flex-col h-screen overflow-hidden">
-            <header className="flex h-14 shrink-0 items-center justify-between gap-2 px-4 bg-[#212121]">
+        <SidebarInset className="bg-black text-white flex flex-col h-screen overflow-hidden">
+            <header className="flex h-14 shrink-0 items-center justify-between gap-2 px-4 bg-black border-b border-white/10">
                 <div className="flex items-center gap-2">
-                    <SidebarTrigger className="text-white hover:bg-[#2f2f2f] hover:text-white" />
-                    <div className="flex items-center gap-2 px-3 py-2 hover:bg-[#2f2f2f] hover:text-white rounded-lg cursor-pointer transition-colors text-lg font-semibold text-white/90">
-                        <YoutubeLogoIcon size={24} className="text-red-500" weight="fill" />
-                        <span>YouTube Video Transcripter</span>
+                    <SidebarTrigger className="text-white hover:bg-white/5 hover:text-white" />
+                    <div className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 hover:text-white rounded-lg cursor-pointer transition-colors text-lg font-semibold text-white/90">
+                        <YoutubeLogoIcon size={24} className="text-white" weight="fill" />
+                        <span>Transcripter</span>
                     </div>
                 </div>
             </header>
@@ -69,13 +69,13 @@ export default function Page() {
     }, [status, router]);
 
     if (!isAuthenticated) {
-        return <div className="bg-[#212121] text-white w-full h-screen flex items-center justify-center"><SpinnerGapIcon className="animate-spin" size={32}/></div>
+        return <div className="bg-black text-white w-full h-screen flex items-center justify-center"><SpinnerGapIcon className="animate-spin" size={32}/></div>
     }
 
     return (
         <SidebarProvider>
             <AppSidebar />
-            <Suspense fallback={<div className="bg-[#212121] text-white w-full h-screen flex items-center justify-center"><SpinnerGapIcon className="animate-spin" size={32}/></div>}>
+            <Suspense fallback={<div className="bg-black text-white w-full h-screen flex items-center justify-center"><SpinnerGapIcon className="animate-spin" size={32}/></div>}>
                 <DashboardContent />
             </Suspense>
         </SidebarProvider>
