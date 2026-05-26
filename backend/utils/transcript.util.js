@@ -41,7 +41,6 @@ export const getTranscript = async (videoUrl) => {
 
     const input = {
       youtube_url: standardUrl,
-      language: "en",
       include_transcript_text: true,
     };
 
