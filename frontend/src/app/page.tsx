@@ -1,183 +1,262 @@
 "use client"
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { FileText, MessageSquare, Briefcase, Globe, Zap, ChevronRight, PlayCircle } from "lucide-react";
+import { ArrowRight, MessageSquareText, Sparkles, BookOpenText, Target, Play } from "lucide-react";
 import { YoutubeLogoIcon } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#212121] text-white font-sans selection:bg-red-500/30">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[#383838] bg-[#212121]/90 backdrop-blur-md">
-        <div className="flex items-center gap-2 cursor-pointer">
-            <YoutubeLogoIcon size={32} className="text-red-500" weight="fill" />
-            <span className="text-xl font-bold tracking-tight text-white/90">YouTube Video Transcripter</span>
+    <div className="min-h-screen bg-[#000000] text-[#ededed] selection:bg-gray-700/50 overflow-x-hidden font-sans">
+      
+      {/* Navbar */}
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${scrolled ? 'bg-black/60 backdrop-blur-md border-white/10 py-3' : 'bg-transparent border-transparent py-5'}`}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <YoutubeLogoIcon size={24} className="text-white" weight="fill" />
+            <span className="font-semibold text-lg tracking-tight">Transcripter</span>
+          </div>
+          <nav className="flex items-center gap-6">
+            <Link href="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors hidden sm:block">
+              Log in
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-white text-black hover:bg-gray-200 rounded-full h-9 px-5 text-sm font-semibold transition-transform active:scale-95">
+                Start for free
+              </Button>
+            </Link>
+          </nav>
         </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-            Login
-          </Link>
-          <Link href="/signup">
-            <Button className="bg-white text-black hover:bg-gray-200 font-semibold rounded-full px-6">
-              Get Started
-            </Button>
-          </Link>
-        </div>
-      </nav>
+      </header>
 
       {/* Hero Section */}
-      <main className="pt-32 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2f2f2f] border border-[#383838] text-sm text-white/80 mb-8 hover:bg-[#383838] transition-colors cursor-pointer">
-          <Zap className="w-4 h-4 text-red-500" />
-          <span>v2.0 is now live — Smarter, Faster, Multilingual</span>
+      <section className="relative pt-40 pb-20 md:pt-52 md:pb-32 overflow-hidden">
+        {/* Subtle Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 flex flex-col items-center text-center pt-8">
+          <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-bold tracking-tighter leading-[1.05] max-w-5xl mb-8">
+            Stop watching. <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">Start learning.</span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-10 leading-relaxed font-light">
+            Drop a YouTube link and instantly get the full transcript, structured summaries, and a chat interface to ask questions. Save hours of your time.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+            <Link href="/signup">
+              <Button className="bg-white text-black hover:bg-gray-200 h-12 px-8 rounded-full text-base font-medium transition-transform hover:scale-105 active:scale-95 group">
+                Get Started <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="#features">
+              <Button variant="outline" className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white bg-transparent transition-colors group">
+                <Play className="mr-2 w-4 h-4 text-gray-400 group-hover:text-white" /> View Features
+              </Button>
+            </Link>
+          </div>
         </div>
-        
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 max-w-4xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70 leading-tight">
-          Turn Any YouTube Video Into Interactive Knowledge
-        </h1>
-        
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mb-10 leading-relaxed">
-          Extract transcripts, generate instant summaries, chat with video content, and simulate mock interviews. All powered by advanced AI.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <Link href="/signup">
-            <Button size="lg" className="h-12 px-8 bg-[#ff0000] hover:bg-[#cc0000] text-white rounded-full text-base font-medium">
-              Start for Free <ChevronRight className="ml-2 w-4 h-4" />
-            </Button>
-          </Link>
-          <Link href="#how-it-works">
-            <Button size="lg" variant="outline" className="h-12 px-8 rounded-full border-[#383838] hover:bg-[#2f2f2f] text-white bg-transparent">
-              <PlayCircle className="mr-2 w-5 h-5" /> How it Works
-            </Button>
-          </Link>
-        </div>
-      </main>
+      </section>
 
-      {/* Features Bento Grid */}
-      <section className="py-24 px-6 border-t border-[#383838]">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Everything you need to master video content</h2>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto">A complete suite of AI tools designed for learners, researchers, and professionals to extract maximum value from YouTube.</p>
+      {/* Abstract Mockup / Visual separator */}
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 relative z-20 -mt-8 md:-mt-12 mb-32">
+        <div className="w-full aspect-video md:aspect-[21/9] rounded-2xl md:rounded-[2rem] border border-white/10 bg-[#0a0a0a] shadow-2xl shadow-black/50 overflow-hidden relative group">
+          {/* Mockup UI Inner */}
+          <div className="absolute top-0 w-full h-12 border-b border-white/10 flex items-center px-4 gap-2 bg-black/40 backdrop-blur-md z-20">
+             <div className="w-3 h-3 rounded-full bg-red-500/80" />
+             <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+             <div className="w-3 h-3 rounded-full bg-green-500/80" />
+             <div className="ml-4 w-64 h-6 rounded-md bg-white/5 border border-white/10 flex items-center px-3">
+               <span className="text-[10px] text-gray-500">youtube.com/watch?v=...</span>
+             </div>
+          </div>
+          {/* Inner Content */}
+          <div className="pt-12 p-6 h-full flex flex-col md:flex-row gap-6 relative z-10 bg-[#050505]">
+             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none" />
+             {/* Left sidebar fake */}
+             <div className="hidden md:flex w-1/4 h-full rounded-xl bg-white/[0.02] border border-white/5 p-4 flex-col gap-3">
+               <div className="h-4 w-24 bg-white/10 rounded-sm mb-4" />
+               <div className="h-3 w-full bg-white/5 rounded-sm" />
+               <div className="h-3 w-full bg-white/5 rounded-sm" />
+               <div className="h-3 w-3/4 bg-white/5 rounded-sm" />
+             </div>
+             {/* Right content fake */}
+             <div className="flex-1 h-full rounded-xl bg-white/[0.02] border border-white/5 p-4 flex flex-col gap-4">
+               <div className="h-8 w-48 bg-white/10 rounded-md" />
+               <div className="flex-1 rounded-lg bg-black/50 border border-white/5 p-4 flex flex-col justify-end relative overflow-hidden">
+                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] bg-[size:20px_20px]" />
+                 <div className="self-end h-10 w-3/4 max-w-sm bg-white/10 rounded-xl rounded-br-none mb-4 relative z-10" />
+                 <div className="self-start h-16 w-2/3 max-w-md bg-white/5 rounded-xl rounded-bl-none border border-white/5 relative z-10" />
+               </div>
+             </div>
+          </div>
+          
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 backdrop-blur-[2px]">
+            <Link href="/signup">
+              <Button className="bg-white text-black rounded-full shadow-2xl font-semibold px-8 h-12">Try the Dashboard</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <section id="features" className="py-24 border-t border-white/10 bg-[#020202]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="mb-16 md:mb-24 md:text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">Built for deep work.</h2>
+            <p className="text-gray-400 text-lg md:text-xl font-light">
+              Stop scrubbing through timelines. Our tools are designed to extract precisely what you need, instantly.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            
             {/* Feature 1 */}
-            <div className="md:col-span-2 bg-[#2f2f2f] hover:bg-[#383838] transition-colors duration-300 border border-[#383838] rounded-3xl p-8 md:p-10 relative overflow-hidden group cursor-pointer">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-3xl rounded-full -mr-20 -mt-20 transition-all duration-500 group-hover:bg-red-500/20" />
-              <MessageSquare className="w-12 h-12 text-[#ff0000] mb-6" />
-              <h3 className="text-2xl font-bold mb-3 text-white">Interactive Chat</h3>
-              <p className="text-white/70 max-w-md text-lg">
-                Ask specific questions about the video content. The AI acts as an expert on the video, ready to explain complex concepts or find exact details for you.
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 hover:bg-[#111] transition-colors duration-300 group flex flex-col">
+              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <BookOpenText className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3 tracking-tight">Structured Summaries</h3>
+              <p className="text-gray-400 text-base leading-relaxed flex-1">
+                Turn lengthy tutorials into concise, readable formats. We extract key takeaways and structure them perfectly.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-[#2f2f2f] hover:bg-[#383838] transition-colors duration-300 border border-[#383838] rounded-3xl p-8 group relative overflow-hidden cursor-pointer">
-              <FileText className="w-10 h-10 text-white/90 mb-6" />
-              <h3 className="text-xl font-bold mb-3 text-white">Smart Summary</h3>
-              <p className="text-white/70">
-                Don't have time to watch a 2-hour lecture? Get AI-generated structured summaries and key takeaways instantly.
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 hover:bg-[#111] transition-colors duration-300 group flex flex-col">
+              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <MessageSquareText className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3 tracking-tight">Contextual Chat</h3>
+              <p className="text-gray-400 text-base leading-relaxed flex-1">
+                Ask questions directly to the video. Our AI knows the exact timestamps and context to give you precise answers.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-[#2f2f2f] hover:bg-[#383838] transition-colors duration-300 border border-[#383838] rounded-3xl p-8 group relative overflow-hidden cursor-pointer">
-              <Globe className="w-10 h-10 text-white/90 mb-6" />
-              <h3 className="text-xl font-bold mb-3 text-white">Full Transcript</h3>
-              <p className="text-white/70">
-                Extract and read the complete spoken text directly from the video. Easily search for specific keywords or quotes without scrubbing the timeline.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="md:col-span-2 bg-[#2f2f2f] hover:bg-[#383838] transition-colors duration-300 border border-[#383838] rounded-3xl p-8 md:p-10 relative overflow-hidden group cursor-pointer">
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 blur-3xl rounded-full -ml-20 -mb-20 transition-all duration-500 group-hover:bg-white/10" />
-              <Briefcase className="w-12 h-12 text-white/90 mb-6" />
-              <h3 className="text-2xl font-bold mb-3 text-white">AI Interview Prep</h3>
-              <p className="text-white/70 max-w-md text-lg">
-                Automatically generate categorized practice questions (Easy, Medium, Hard) based on educational or tutorial videos to test your knowledge.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Instructions / How it works */}
-      <section id="how-it-works" className="py-24 px-6 bg-[#1a1a1a] border-t border-b border-[#383838] relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-red-900/10 blur-[120px] rounded-full pointer-events-none" />
-        
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How it works</h2>
-            <p className="text-white/60 text-lg">Get started in seconds. No complex setup required.</p>
-          </div>
-
-          <div className="space-y-12">
-            {[
-              {
-                step: "01",
-                title: "Create an Account",
-                desc: "Sign up instantly using your Google account via our secure authentication flow.",
-              },
-              {
-                step: "02",
-                title: "Paste a YouTube Link",
-                desc: "Drop any public YouTube video link into the dashboard. Our engine handles the extraction automatically.",
-              },
-              {
-                step: "03",
-                title: "Generate Insights",
-                desc: "Receive a beautifully formatted summary and key takeaways from the video in seconds.",
-              },
-              {
-                step: "04",
-                title: "Interact & Learn",
-                desc: "Dive deeper by chatting with our AI about the video's content or taking a generated mock interview.",
-              }
-            ].map((item, idx) => (
-              <div key={idx} className="flex flex-col md:flex-row gap-6 items-start md:items-center group">
-                <div className="text-6xl font-black text-white/10 group-hover:text-[#ff0000]/30 transition-colors duration-300">{item.step}</div>
-                <div className="flex-1">
-                  <h4 className="text-2xl font-semibold mb-2 text-white">{item.title}</h4>
-                  <p className="text-white/70 text-lg leading-relaxed">{item.desc}</p>
-                </div>
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 hover:bg-[#111] transition-colors duration-300 group flex flex-col md:col-span-2 lg:col-span-1">
+              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <Target className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-white mb-3 tracking-tight">Interview Simulation</h3>
+              <p className="text-gray-400 text-base leading-relaxed flex-1">
+                Generate practice questions (Easy, Medium, Hard) based on the video to test your understanding before the real deal.
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="py-32 px-6 text-center relative overflow-hidden">
-        <div className="max-w-3xl mx-auto relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to transform how you consume video?</h2>
-          <p className="text-white/70 mb-10 text-xl">
-            Join the future of learning today. Process your first video for free.
-          </p>
-          <Link href="/signup">
-            <Button size="lg" className="h-14 px-10 bg-white text-black hover:bg-gray-200 rounded-full text-lg font-semibold shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] transition-shadow">
-              Get Started Now
-            </Button>
-          </Link>
+      {/* Workflow Section */}
+      <section className="py-32 border-t border-white/10 relative overflow-hidden bg-black">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full pointer-events-none blur-3xl" />
+        
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
+                From URL to insights <br className="hidden md:block"/> in <span className="text-gray-400 font-light italic">three</span> steps.
+              </h2>
+              <p className="text-gray-400 text-lg mb-10 max-w-md font-light">
+                We've stripped away the complexity. No settings to configure, no parameters to tweak.
+              </p>
+              
+              <div className="flex flex-col gap-10">
+                {[
+                  { step: "01", title: "Copy & Paste", desc: "Grab any public YouTube link and drop it into the dashboard." },
+                  { step: "02", title: "Instant Processing", desc: "Our engine bypasses rate limits to fetch transcripts instantly." },
+                  { step: "03", title: "Start Learning", desc: "Read the summary, chat with the AI, or take a mock interview." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-6 group">
+                    <span className="text-xs font-mono text-gray-600 group-hover:text-white transition-colors pt-1 shrink-0">
+                      {item.step}
+                    </span>
+                    <div>
+                      <h4 className="text-lg font-semibold text-white mb-2">{item.title}</h4>
+                      <p className="text-gray-400 leading-relaxed text-sm font-light">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Visual element for workflow */}
+            <div className="relative h-[400px] md:h-[500px] rounded-3xl bg-[#0a0a0a] border border-white/10 p-8 overflow-hidden group">
+               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#ffffff05,transparent_60%)]" />
+               <div className="flex flex-col gap-4 h-full relative z-10">
+                 {/* Fake Input */}
+                 <div className="w-full h-12 bg-black border border-white/10 rounded-xl flex items-center px-4 shadow-xl">
+                   <div className="w-full h-3 bg-white/5 rounded-sm overflow-hidden relative">
+                      <div className="absolute top-0 left-0 h-full w-1/3 bg-gray-600 animate-[shimmer_2.5s_infinite]" />
+                   </div>
+                 </div>
+                 {/* Fake Results Cards */}
+                 <div className="flex-1 flex flex-col gap-4 mt-6">
+                   <div className="w-full h-20 bg-white/5 border border-white/5 rounded-xl group-hover:-translate-y-1 transition-transform duration-500 shadow-md" />
+                   <div className="w-3/4 h-20 bg-white/5 border border-white/5 rounded-xl group-hover:-translate-y-1 transition-transform duration-500 delay-75 shadow-md" />
+                   <div className="w-5/6 h-20 bg-white/5 border border-white/5 rounded-xl group-hover:-translate-y-1 transition-transform duration-500 delay-150 shadow-md" />
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-32 border-t border-white/10 bg-[#020202] relative">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[50%] bg-gradient-to-t from-white/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
+            Start learning efficiently.
+          </h2>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/signup">
+              <Button className="bg-white text-black hover:bg-gray-200 h-12 px-8 rounded-full text-base font-semibold transition-transform hover:scale-105 active:scale-95 w-full sm:w-auto shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                Create free account
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button variant="outline" className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white bg-transparent w-full sm:w-auto font-medium">
+                Sign in
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-[#383838] text-center text-white/50 text-sm bg-[#212121]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <YoutubeLogoIcon size={24} className="text-red-500" weight="fill" />
-            <span className="text-white font-medium">YouTube Video Transcripter</span>
-            <span className="ml-2">© 2026 All rights reserved.</span>
+      <footer className="py-12 border-t border-white/10 text-gray-500 text-sm bg-black">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2 text-gray-400">
+            <YoutubeLogoIcon size={20} weight="fill" className="text-gray-300" />
+            <span className="font-semibold text-gray-300">Transcripter</span>
+            <span className="ml-4 text-gray-600">© {new Date().getFullYear()}</span>
           </div>
-          <div className="flex gap-6">
-            <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+          <div className="flex gap-8 font-medium">
+            <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
+            <Link href="#" className="hover:text-white transition-colors">GitHub</Link>
+            <Link href="#" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
           </div>
         </div>
       </footer>
+      
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(300%); }
+        }
+      `}} />
     </div>
   );
 }
