@@ -1,9 +1,8 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import youtubeRoutes from "./routes/youtube.routes.js"
 import userRoutes from "./routes/user.routes.js"
-dotenv.config();
 
 const app = express();
 
