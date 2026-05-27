@@ -5,7 +5,6 @@ import { deleteVideoService } from '../services/video/deleteVideo.service.js';
 import { generateInterviewService } from '../services/video/generateInterview.service.js';
 
 export const processVideoController = async (req, res) => {
-  // console.log(req.user)
   try {
     const { videoUrl } = req.body;
 
@@ -40,9 +39,14 @@ export const processVideoController = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    let message = error.message;
+    if (message && (message.includes("rate_limit_exceeded") || message.includes("413") || message.includes("Limit 6000") || message.includes("too large"))) {
+      message = "This video is too long to process on the free tier. Please try a shorter video (under 20-30 minutes).";
+    }
+
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: message,
     });
   }
 };
@@ -102,9 +106,14 @@ export const askQuestionController = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    let message = error.message;
+    if (message && (message.includes("rate_limit_exceeded") || message.includes("413") || message.includes("Limit 6000") || message.includes("too large"))) {
+      message = "AI service is currently busy or the request is too large. Please try again in a minute.";
+    }
+
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: message,
     });
   }
 };
@@ -129,8 +138,6 @@ export const videoDeleteController = async (req, res) => {
         }
       },
     });
-
-    console.log(notExists)
 
     if (!notExists) {
       return res.status(404).json({
@@ -176,9 +183,14 @@ export const generateInterviewController = async (req, res) => {
   } catch (error) {
     console.error("Error in generateInterviewController:", error);
 
+    let message = error.message;
+    if (message && (message.includes("rate_limit_exceeded") || message.includes("413") || message.includes("Limit 6000") || message.includes("too large"))) {
+      message = "This video is too long to generate interview questions on the free tier. Please try a shorter video.";
+    }
+
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to generate interview questions",
+      message: message || "Failed to generate interview questions",
       stack: error.stack
     });
   }
