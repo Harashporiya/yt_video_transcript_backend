@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import { signIn, useSession } from "next-auth/react"
+import { signIn, useSession, signOut } from "next-auth/react"
 import { SpinnerGapIcon } from "@phosphor-icons/react"
 
 interface AuthResponse {
@@ -43,11 +43,16 @@ export function SignupForm({
         return;
       }
     }
-    
+
     if (status === "authenticated") {
-      router.push("/dashboard");
+      const nextAuthToken = (session as any)?.backendToken;
+      if (nextAuthToken && isTokenValid(nextAuthToken)) {
+        router.push("/dashboard");
+      } else if (nextAuthToken) {
+        signOut({ redirect: false });
+      }
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   const signup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -109,55 +114,55 @@ export function SignupForm({
         )}
 
         <div className="space-y-2">
-            <Input
-              id="name"
-              type="text"
-              placeholder="Full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              disabled={loading}
-              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
-            />
-        </div>
-        
-        <div className="space-y-2">
-            <Input
-              id="email"
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
-            />
-        </div>
-        
-        <div className="space-y-2">
-            <Input
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
-            />
-        </div>
-        
-        <Button 
-            type="submit" 
+          <Input
+            id="name"
+            type="text"
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
             disabled={loading}
-            className="h-12 w-full text-base font-bold rounded-lg bg-white hover:bg-white/90 text-black transition-colors"
+            className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Input
+            id="email"
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Input
+            id="password"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+            className="h-12 px-4 text-base rounded-lg border-white/10 bg-[#0a0a0a] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/30"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          disabled={loading}
+          className="h-12 w-full text-base font-bold rounded-lg bg-white hover:bg-white/90 text-black transition-colors"
         >
           {loading ? <SpinnerGapIcon className="animate-spin mr-2" size={20} /> : null}
           Continue
         </Button>
-        
+
         <div className="text-center mt-2 text-sm text-white/60">
-            Do you have an account? <Link href="/login" className="text-white hover:underline font-bold">Log in</Link>
+          Do you have an account? <Link href="/login" className="text-white hover:underline font-bold">Log in</Link>
         </div>
       </form>
 
@@ -173,11 +178,11 @@ export function SignupForm({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Button 
-            variant="outline" 
-            type="button" 
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="h-12 w-full text-base font-medium rounded-lg border-white/10 bg-[#0a0a0a] hover:bg-white/5 text-white hover:text-white transition-colors relative"
+        <Button
+          variant="outline"
+          type="button"
+          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          className="h-12 w-full text-base font-medium rounded-lg border-white/10 bg-[#0a0a0a] hover:bg-white/5 text-white hover:text-white transition-colors relative"
         >
           <svg className="absolute left-4 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
