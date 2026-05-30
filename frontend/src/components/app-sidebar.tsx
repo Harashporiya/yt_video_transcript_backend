@@ -18,12 +18,9 @@ import {
   PlusIcon,
   VideoCameraIcon,
   ClockCounterClockwiseIcon,
-  StarIcon,
   SidebarSimpleIcon,
   TrashIcon,
   DotsThreeIcon,
-  ListBulletsIcon,
-  ChatCircleTextIcon,
   SignOutIcon
 } from "@phosphor-icons/react"
 import {
@@ -37,42 +34,36 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { InfoIcon } from "@phosphor-icons/react"
+import { useVideoContext } from "@/lib/video-context"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
   const router = useRouter()
-  const [videos, setVideos] = useState<any[]>([])
+  const { videos, refreshVideos, isLoading } = useVideoContext()
   const [userProfile, setUserProfile] = useState<any>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [profileLoading, setProfileLoading] = useState(true)
 
+  // Load videos + profile on mount
   useEffect(() => {
     const token = (session as any)?.backendToken || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
-    if (token) {
-      setIsLoading(true);
-      Promise.allSettled([
-        axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/videos`, {
-          headers: { Authorization: token }
-        }).then(res => {
-          if (res.data.success) {
-            setVideos(res.data.videos)
-          }
-        }),
-        axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile`, {
-          headers: { Authorization: token }
-        }).then(res => {
-          if (res.data.success) {
-            setUserProfile(res.data.user)
-          }
-        })
-      ]).finally(() => {
-        setIsLoading(false);
-      });
-    } else {
-      setIsLoading(false);
+    if (!token) {
+      setProfileLoading(false);
+      return;
     }
-  }, [])
+
+    // Load videos via context
+    refreshVideos();
+
+    // Load user profile
+    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile`, {
+      headers: { Authorization: token }
+    }).then(res => {
+      if (res.data.success) setUserProfile(res.data.user);
+    }).catch(console.error).finally(() => setProfileLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session])
 
   const executeDelete = async (videoId: string) => {
     const token = (session as any)?.backendToken || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
@@ -83,7 +74,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/youtube/delete/${videoId}`, {
         headers: { Authorization: token }
       });
-      setVideos(prev => prev.filter(v => v.videoId !== videoId));
+
+      // Refresh list from server after delete
+      await refreshVideos();
       setConfirmDeleteId(null);
 
       const currentUrl = new URL(window.location.href);
@@ -96,6 +89,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       setTimeout(() => setError(null), 3000);
     }
   }
+
+  const loading = isLoading || profileLoading;
 
   return (
     <Sidebar className="border-r-0 !bg-black border-r border-white/10 text-white w-[260px]" {...props}>
@@ -141,7 +136,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <div className="flex flex-col gap-1 mt-1">
-              {isLoading ? (
+              {loading ? (
                 <div className="flex flex-col gap-2 p-2">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="h-9 bg-white/5 rounded-lg animate-pulse w-full flex items-center gap-3 px-2">
@@ -226,7 +221,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="hover:bg-white/5 hover:text-white h-[52px] rounded-xl px-2">
                   <div className="flex items-center gap-3 w-full">
-                    {isLoading ? (
+                    {loading ? (
                       <>
                         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 animate-pulse"></div>
                         <div className="flex flex-col flex-1 overflow-hidden gap-1.5 text-left">

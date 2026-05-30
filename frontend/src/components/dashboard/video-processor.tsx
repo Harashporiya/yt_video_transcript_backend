@@ -9,13 +9,14 @@ import {
     SpinnerGapIcon,
     InfoIcon,
     LockSimpleIcon,
-    WarningIcon
 } from "@phosphor-icons/react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useVideoContext } from "@/lib/video-context"
 
 export function VideoProcessor() {
     const { data: session } = useSession()
     const router = useRouter()
+    const { refreshVideos, setSuccessMessage } = useVideoContext()
 
     const [videoUrl, setVideoUrl] = useState("")
     const [loading, setLoading] = useState(false)
@@ -46,6 +47,13 @@ export function VideoProcessor() {
             }, {
                 headers: { Authorization: token }
             });
+
+
+            await refreshVideos();
+
+
+            setSuccessMessage("Video processed successfully! You can now chat, summarize, and generate interview questions.");
+
             router.push(`?v=${vId}`);
             setVideoUrl("");
         } catch (error: any) {
@@ -63,7 +71,7 @@ export function VideoProcessor() {
     return (
         <div className="flex flex-1 flex-col items-center px-4 w-full h-full overflow-y-auto bg-black [&::-webkit-scrollbar]:hidden">
             <div className="flex flex-col items-center justify-center max-w-4xl w-full flex-1 pt-10 pb-6 relative">
-                
+
                 {/* Video Limit Banner */}
                 {limitReached && (
                     <div className="absolute top-0 w-full px-4 pt-4 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -114,6 +122,7 @@ export function VideoProcessor() {
                             <input
                                 value={videoUrl}
                                 onChange={(e) => setVideoUrl(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") processVideo(); }}
                                 placeholder="Paste a YouTube link here (e.g., https://youtu.be/...)"
                                 className="w-full bg-transparent text-white placeholder:text-white/30 outline-none h-10 overflow-hidden text-lg font-medium"
                             />
@@ -138,8 +147,6 @@ export function VideoProcessor() {
                         </div>
                     </div>
                 </div>
-
-
 
             </div>
         </div>
