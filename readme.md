@@ -1,133 +1,110 @@
 # YouTube Video Transcripter
 
-A powerful, AI-driven full-stack web application designed to automatically extract YouTube video transcripts, generate insightful summaries, and provide an interactive ChatGPT-like experience to converse with video content.
+Ever found yourself scrubbing through a 2-hour long YouTube video just to find one specific answer, or wishing you could just search a tutorial like a textbook? That's exactly why we built this.
 
-<img src="./frontend/public/home.png" width="800" />
+This is a full-stack AI tool that pulls transcripts from any YouTube video, generates neat summaries, and opens up a chat window where you can ask questions directly about the video content — like ChatGPT, but powered by that specific video. It even generates sample interview questions to help you study or prepare.
 
-## 🚀 Features
+![Landing Page](./frontend/public/home.png)
 
-- **Advanced Transcript Extraction:** Automatically extracts English subtitles for fast processing, with a robust fallback mechanism utilizing Apify to handle missing or multilingual transcripts.
-- **AI-Powered Insights:** Employs LangChain and Google GenAI to generate keypoint summaries and facilitate deep, interactive Q&A (chat) and interview workflows based on video content.
-- **Vector Search & RAG:** Integrates Pinecone for vector storage, enabling highly accurate retrieval-augmented generation (RAG) for querying long video transcripts.
-- **Premium User Interface:** A modern, conversion-focused landing page with a bento-grid layout, stunning dark-mode aesthetics, and sleek micro-animations inspired by high-end SaaS platforms.
-- **Robust Authentication:** Secure, persistent authentication flow using NextAuth.js and Google OAuth.
-- **Video History Management:** Intuitive dashboard to track processed videos with inline management tools.
+---
 
-## 🏗️ Architecture Pipeline
+## ⚡ What it does
 
-Here is the complete data flow and architectural pipeline of the YouTube Video Transcripter:
+- **Smart Transcript Extraction:** First tries to grab official/auto-generated YouTube subtitles directly. If that fails (due to YouTube blocks or region settings), it falls back to Apify scraper as a safety net.
+- **Interactive Video Q&A (RAG):** Chunks the transcript, embeds it into Pinecone using HuggingFace, and uses Groq (Llama 3.3) to answer your questions with precise context — Retrieval-Augmented Generation done right.
+- **Clean Summary & Key Takeaways:** Creates structured summaries so you can understand a video's core content in under 30 seconds.
+- **Interview Preparation:** Generates practice questions (Easy, Medium, and Hard) based on the video's content.
+- **Usage Limits:** Each user can process 1 video and send up to 3 chat messages per video — keeping the platform fair and sustainable.
+- **Premium Dark Mode UI:** Minimal black-on-black aesthetic, smooth animations, and a clean bento-grid layout.
 
-```mermaid
-flowchart TB
-    %% Definitions
-    User((User))
-    
-    subgraph Frontend["Frontend (Next.js)"]
-        UI["Landing Page & UI"]
-        Auth["NextAuth.js\n(Google OAuth)"]
-        Dash["Dashboard\n(Chat & Summary)"]
-    end
-    
-    subgraph Backend["Backend (Node.js/Express)"]
-        API["API Endpoints"]
-        Extractor["Transcript\nExtractor"]
-        LLM["LangChain &\nAI Services"]
-    end
-
-    subgraph External["External APIs"]
-        YT["YouTube\n(Native Subtitles)"]
-        Apify["Apify Actor\n(Fallback Scraper)"]
-        Gemini["Google GenAI\n(Gemini)"]
-    end
-
-    subgraph Databases["Databases"]
-        PG[("PostgreSQL via Prisma\n(Users, Videos, Chats)")]
-        Vector[("Pinecone\n(Vector DB)")]
-    end
-
-    %% User Interaction
-    User -->|Visits| UI
-    User -->|Authenticates| Auth
-    User -->|Submits Video URL| Dash
-    User -->|Chats with AI| Dash
-
-    %% Frontend to Backend
-    Auth <-->|Stores/Reads User| PG
-    Dash <-->|REST Requests| API
-
-    %% Backend Pipeline (Video Processing)
-    API -->|1. Process Video| Extractor
-    Extractor -->|1a. Fetch Subtitles| YT
-    Extractor -->|1b. Fallback Extract| Apify
-    Extractor -->|2. Clean Transcript| LLM
-    
-    %% AI Processing
-    LLM -->|3. Generate Summaries| Gemini
-    LLM -->|4. Chunk & Embed| Vector
-    LLM -->|5. Store Metadata| PG
-
-    %% Chat Pipeline (RAG)
-    API -->|Chat Message| LLM
-    LLM -->|Search Similar Chunks| Vector
-    Vector -->|Relevant Context| LLM
-    LLM -->|Prompt + Context| Gemini
-    Gemini -->|AI Response| API
-```
+---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework:** [Next.js](https://nextjs.org/) (v16) & React (v19)
-- **Styling:** Tailwind CSS (v4), Radix UI, Class Variance Authority
-- **Authentication:** NextAuth.js
-- **Icons & Animation:** Phosphor Icons, Lucide React, TW Animate CSS
+- **Framework:** Next.js (v16) & React (v19)
+- **Styling:** Tailwind CSS (v4) + custom dark theme
+- **Auth:** NextAuth.js with Google OAuth Provider
+- **Icons:** Phosphor Icons & Lucide React
 
 ### Backend
-- **Framework:** Node.js with Express
-- **Database & ORM:** PostgreSQL managed via Prisma
-- **AI & Vector DB:** LangChain (Core & Community), Google GenAI, Pinecone Database
-- **Data Scraping:** Apify Client, YouTube Transcript utilities
+- **Framework:** Node.js + Express
+- **Database & ORM:** PostgreSQL (Neon) + Prisma ORM
+- **LLM:** Groq API — `llama-3.3-70b-versatile` (fast, free-tier friendly)
+- **Embeddings:** HuggingFace Inference API — `BAAI/bge-small-en-v1.5` (384-dim vectors)
+- **Vector Store:** Pinecone
+- **AI Orchestration:** LangChain
+- **Transcript Fallback:** Apify Client
 
-## 📦 Getting Started
+---
 
-### Prerequisites
-Before running the application, ensure you have the following installed and configured:
-- Node.js (v18+ recommended)
-- PostgreSQL
-- API Keys: Pinecone, Google Gemini, Apify, Google OAuth (Client ID & Secret)
+## 🏗️ Architecture Pipeline
 
-### Backend Setup
+```
+User pastes YouTube URL
+        ↓
+Backend fetches Video Info (title, thumbnail) via youtubei.js
+        ↓
+Transcript extracted (youtube-transcript → Apify fallback)
+        ↓
+Transcript split into chunks (RecursiveCharacterTextSplitter)
+        ↓
+Chunks embedded via HuggingFace (BAAI/bge-small-en-v1.5)
+        ↓
+Vectors stored in Pinecone (namespace = userId-videoId)
+        ↓
+Summary generated via Groq LLM (llama-3.3-70b-versatile)
+        ↓
+Video + Summary saved to PostgreSQL via Prisma
+        ↓
+Frontend shows chat interface ← User asks questions
+        ↓
+Question embedded → Pinecone similarity search → Top 5 chunks
+        ↓
+Groq LLM answers with context (RAG)
+```
 
-1. Navigate to the `backend` directory:
+---
+
+## 🚀 Running Locally
+
+### 1. Backend Setup
+
+1. Go into the backend folder:
    ```bash
    cd backend
    ```
-2. Install dependencies:
+2. Install packages:
    ```bash
    npm install
    ```
-3. Set up your environment variables (`.env` file):
+3. Create a `.env` file in the `backend` folder:
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/yt_ai?schema=public"
-   PORT=5000
+   PORT=3001
+   DATABASE_URL="postgresql://user:password@localhost:5432/db_name?sslmode=require"
+   JWT_SECRET="your_custom_jwt_secret"
+   GROQ_API_KEY="your_groq_api_key"
+   HUGGINGFACE_API_KEY="your_huggingface_api_key"
    PINECONE_API_KEY="your_pinecone_api_key"
-   GOOGLE_API_KEY="your_gemini_api_key"
-   APIFY_API_TOKEN="your_apify_token"
-   # Add other required variables
+   APIFY_API_TOKEN="your_apify_api_token"
+   LOCAL_FRONTEND_URL="http://localhost:3000"
+   FRONTEND_DEPLOY_URL="https://your-production-app.vercel.app"
    ```
-4. Generate Prisma client and push the schema to your database:
+4. Push the DB schema and generate Prisma client:
    ```bash
-   npx prisma generate
    npx prisma db push
+   npx prisma generate
    ```
-5. Start the backend development server:
+5. Start the server:
    ```bash
    npm run dev
    ```
 
-### Frontend Setup
+Backend will be running at `http://localhost:3001`.
 
-1. Navigate to the `frontend` directory:
+### 2. Frontend Setup
+
+1. Go into the frontend folder:
    ```bash
    cd frontend
    ```
@@ -135,29 +112,25 @@ Before running the application, ensure you have the following installed and conf
    ```bash
    npm install
    ```
-3. Set up your environment variables (`.env.local` file):
+3. Create a `.env` file in the `frontend` folder:
    ```env
-   NEXT_PUBLIC_API_URL="http://localhost:5000"
-   GOOGLE_CLIENT_ID="your_google_client_id"
-   GOOGLE_CLIENT_SECRET="your_google_client_secret"
-   NEXTAUTH_SECRET="your_nextauth_secret"
-   NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
+   GOOGLE_CLIENT_ID="your_google_oauth_client_id"
+   GOOGLE_CLIENT_SECRET="your_google_oauth_client_secret"
+   NEXTAUTH_SECRET="your_nextauth_secret_key"
    ```
-4. Start the frontend development server:
+4. Start the dev server:
    ```bash
    npm run dev
    ```
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Open `http://localhost:3000` and you're good to go!
+
+---
 
 ## 🚢 Deployment
 
-- **Frontend:** Optimized for deployment on [Vercel](https://vercel.com).
-- **Backend:** Configured for deployment on [Render](https://render.com) or similar Node.js hosting environments. Ensure CORS is appropriately configured in the backend to accept requests from your production frontend domain.
+- **Frontend:** Deploy on [Vercel](https://vercel.com) — connect your GitHub repo and set the env variables.
+- **Backend:** Works on [Render](https://render.com) or [Railway](https://railway.app). Make sure `LOCAL_FRONTEND_URL` and `FRONTEND_DEPLOY_URL` are set correctly to avoid CORS issues.
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
-
-## 📝 License
-
-This project is licensed under the [ISC License](LICENSE).
+> **Note:** The Pinecone index must have **384 dimensions** to match the HuggingFace `BAAI/bge-small-en-v1.5` embedding model.
